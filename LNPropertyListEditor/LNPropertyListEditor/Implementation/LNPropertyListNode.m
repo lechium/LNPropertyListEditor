@@ -503,11 +503,21 @@ static NSMapTable<NSString*, LNPropertyListNode*>* _pasteboardNodeMapping;
 		NSDictionary* info = [NSPropertyListSerialization propertyListWithData:propertyList options:0 format:nil error:NULL];
 		NSString* UDIDString = info[@"UDID"];
 		rv = [_pasteboardNodeMapping objectForKey:UDIDString];
-		
 		if(rv == nil)
-		{
-			rv = [NSKeyedUnarchiver unarchivedObjectOfClass:LNPropertyListNode.class fromData:info[@"data"] error:NULL];
-		}
+        {
+            NSError *theError = nil;
+            rv = [NSKeyedUnarchiver unarchivedObjectOfClass:LNPropertyListNode.class fromData:info[@"data"] error:&theError];
+            if (theError) { //this fixes these kind of errors when trying to copy & paste arrays or dictionaries.
+                /*
+                 error: Error Domain=NSCocoaErrorDomain Code=4864 "value for key 'children' was of unexpected class 'NSMutableArray (0x7fff802b8768) [/System/Library/Frameworks/CoreFoundation.framework]'. Allowed classes are '{(
+                     "LNPropertyListNode (0x102ce37b0) [/Users/bradleyk/Library/Developer/Xcode/DerivedData/ConfigEditor-gqrxwubpjjxiuwgkalgikgeavzlb/Build/Products/Debug/ConfigEditor.app]"
+                 )}'." UserInfo={NSDebugDescription=value for key 'children' was of unexpected class 'NSMutableArray (0x7fff802b8768) [/System/Library/Frameworks/CoreFoundation.framework]'. Allowed classes are '{(
+                     "LNPropertyListNode (0x102ce37b0) [[REDACTED]/Library/Developer/Xcode/DerivedData/ConfigEditor-gqrxwubpjjxiuwgkalgikgeavzlb/Build/Products/Debug/ConfigEditor.app]"
+                 )}'.}
+                 */
+                rv = [NSKeyedUnarchiver unarchiveObjectWithData:info[@"data"]];
+            }
+       }
 	}
 	
 	if([type isEqualToString:LNPropertyListNodeXcodeKeyType])
