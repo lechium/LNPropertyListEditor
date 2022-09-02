@@ -515,7 +515,7 @@ static NSMapTable<NSString*, LNPropertyListNode*>* _pasteboardNodeMapping;
                      "LNPropertyListNode (0x102ce37b0) [[REDACTED]/Library/Developer/Xcode/DerivedData/ConfigEditor-gqrxwubpjjxiuwgkalgikgeavzlb/Build/Products/Debug/ConfigEditor.app]"
                  )}'.}
                  */
-                rv = [NSKeyedUnarchiver unarchiveObjectWithData:info[@"data"]];
+                rv = [NSKeyedUnarchiver unarchiveObjectWithData:info[@"data"]]; //deprecated but it works, I dont see any new replacements that will easily allow this kind of fix/change.
             }
        }
 	}
